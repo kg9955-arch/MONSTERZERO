@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cart — Monster Zero</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300;1,400&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+@font-face {
+  font-family: 'Handelson Two';
+  src: url('https://fonts.cdnfonts.com/s/15181/HandelsonTwo.woff') format('woff');
+  font-weight: normal; font-style: normal; font-display: swap;
+}
+</style>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{--cream:#faf7f2;--warm:#f2ebe0;--ink:#2a2520;--muted:#8a7e72;--soft:#c8bcb0;--display:'Cormorant Garamond',serif;
+  --script:'Handelson Two','Cormorant Garamond',serif;
+  --body:'Montserrat',sans-serif;}
+html{scroll-behavior:smooth;}
+body{font-family:var(--body);background:var(--cream);color:var(--ink);min-height:100vh;}
+nav{position:sticky;top:0;z-index:100;display:flex;justify-content:space-between;align-items:center;padding:1rem 4rem;background:rgba(250,247,242,0.94);backdrop-filter:blur(20px);border-bottom:1px solid rgba(200,188,176,0.25);}
+.nav-logo img{height:52px;width:auto;display:block;}
+.nav-links{display:flex;gap:2.5rem;list-style:none;}
+.nav-links a{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;color:var(--muted);text-decoration:none;transition:color 0.2s;}
+.nav-links a:hover{color:var(--ink);}
+.nav-right{display:flex;align-items:center;gap:1.5rem;}
+.nav-cta{font-size:0.63rem;letter-spacing:0.2em;text-transform:uppercase;font-weight:500;border:1px solid var(--ink);color:var(--ink);padding:0.55rem 1.5rem;text-decoration:none;transition:all 0.25s;}
+.nav-cta:hover{background:var(--ink);color:var(--cream);}
+.cart-icon{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--ink);text-decoration:none;position:relative;}
+.cart-count{position:absolute;top:-8px;right:-12px;background:var(--ink);color:var(--cream);font-size:0.5rem;width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center;}
+
+.cart-page{max-width:1100px;margin:0 auto;padding:5rem 4rem 8rem;display:grid;grid-template-columns:1fr 380px;gap:5rem;align-items:start;}
+.cart-header{grid-column:1/-1;margin-bottom:1rem;}
+.cart-tag{font-size:0.58rem;letter-spacing:0.3em;text-transform:uppercase;font-weight:500;color:var(--soft);margin-bottom:0.8rem;}
+.cart-title{font-family:var(--script);font-size:clamp(2.5rem,5vw,4.5rem);font-weight:300;line-height:0.92;color:var(--ink);}
+.cart-title em{font-style:italic;}
+
+.cart-items{}
+.cart-empty{padding:4rem 0;text-align:center;}
+.cart-empty p{font-size:0.88rem;font-weight:300;color:var(--muted);margin-bottom:2rem;}
+.cart-empty a{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;background:var(--ink);color:var(--cream);padding:0.9rem 2.4rem;text-decoration:none;}
+
+.cart-item{display:grid;grid-template-columns:80px 1fr auto;gap:1.5rem;align-items:center;padding:1.5rem 0;border-bottom:1px solid rgba(200,188,176,0.25);}
+.cart-item-img{height:80px;width:80px;display:flex;align-items:center;justify-content:center;background:var(--warm);}
+.cart-item-img img{height:70px;width:auto;object-fit:contain;filter:drop-shadow(0 4px 8px rgba(0,0,0,0.08));}
+.cart-item-name{font-family:var(--script);font-size:1.4rem;font-weight:300;color:var(--ink);margin-bottom:0.3rem;}
+.cart-item-price{font-size:0.78rem;font-weight:300;color:var(--muted);}
+.cart-item-right{display:flex;flex-direction:column;align-items:flex-end;gap:0.8rem;}
+.qty-ctrl{display:flex;align-items:center;border:1px solid rgba(200,188,176,0.4);}
+.qty-btn{width:32px;height:32px;background:none;border:none;cursor:pointer;font-size:0.9rem;color:var(--ink);transition:background 0.2s;}
+.qty-btn:hover{background:var(--warm);}
+.qty-val{width:36px;text-align:center;font-size:0.82rem;}
+.item-total{font-family:var(--display);font-size:1.2rem;font-weight:300;color:var(--ink);}
+.remove-btn{font-size:0.58rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--soft);background:none;border:none;cursor:pointer;transition:color 0.2s;}
+.remove-btn:hover{color:var(--ink);}
+
+.cart-summary{background:var(--warm);padding:2.5rem;}
+.summary-title{font-family:var(--script);font-size:1.8rem;font-weight:300;color:var(--ink);margin-bottom:2rem;}
+.summary-row{display:flex;justify-content:space-between;align-items:center;padding:0.6rem 0;border-bottom:1px solid rgba(200,188,176,0.25);font-size:0.82rem;font-weight:300;color:var(--muted);}
+.summary-row.total{border-bottom:none;margin-top:0.5rem;padding-top:1rem;}
+.summary-row.total span:first-child{font-size:0.68rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--ink);}
+.summary-row.total span:last-child{font-family:var(--display);font-size:1.8rem;font-weight:300;color:var(--ink);}
+.summary-note{font-size:0.7rem;font-weight:300;color:var(--muted);margin:1.2rem 0 1.8rem;line-height:1.7;}
+.checkout-btn{width:100%;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;background:var(--ink);color:var(--cream);border:none;padding:1rem;cursor:pointer;transition:background 0.25s;margin-bottom:0.8rem;}
+.checkout-btn:hover{background:#4a7010;}
+.store-btn{width:100%;font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;background:none;color:var(--ink);border:1px solid var(--ink);padding:1rem;cursor:pointer;transition:all 0.25s;text-decoration:none;display:block;text-align:center;}
+.store-btn:hover{background:var(--ink);color:var(--cream);}
+.summary-store{margin-top:1.5rem;padding-top:1.5rem;border-top:1px solid rgba(200,188,176,0.25);}
+.summary-store p{font-size:0.68rem;letter-spacing:0.1em;text-transform:uppercase;color:var(--muted);margin-bottom:0.5rem;}
+.summary-store address{font-style:normal;font-size:0.8rem;font-weight:300;color:var(--ink);line-height:1.8;}
+
+footer{background:var(--ink);padding:3rem 4rem 2rem;display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:3rem;}
+.footer-logo img{height:44px;width:auto;opacity:0.7;margin-bottom:1rem;}
+.footer-tagline{font-size:0.78rem;font-weight:300;color:rgba(250,247,242,0.28);line-height:1.8;max-width:190px;}
+footer h4{font-size:0.57rem;letter-spacing:0.25em;text-transform:uppercase;font-weight:600;color:rgba(250,247,242,0.28);margin-bottom:1.1rem;}
+footer ul{list-style:none;display:flex;flex-direction:column;gap:0.65rem;}
+footer ul a{font-size:0.78rem;font-weight:300;color:rgba(250,247,242,0.42);text-decoration:none;transition:color 0.2s;}
+footer ul a:hover{color:rgba(250,247,242,0.85);}
+.footer-bottom{grid-column:1/-1;border-top:1px solid rgba(250,247,242,0.07);padding-top:1.5rem;margin-top:0.5rem;}
+.footer-copy{font-size:0.63rem;font-weight:300;color:rgba(250,247,242,0.16);line-height:1.7;}
+
+@media(max-width:900px){
+  nav{padding:1rem 1.5rem;}.nav-links{display:none;}
+  .cart-page{grid-template-columns:1fr;padding:3rem 1.5rem 5rem;gap:3rem;}
+  footer{grid-template-columns:1fr 1fr;padding:3rem 1.5rem 2rem;}
+}
+</style>
+</head>
+<body>
+<nav>
+  <div class="nav-logo"><a href="index.html"><img src="assets/logo-dark.png" alt="Monster Zero"></a></div>
+  <ul class="nav-links">
+    <li><a href="index.html#flavours">Flavours</a></li>
+    <li><a href="index.html#about">About</a></li>
+    <li><a href="store.html">Our Store</a></li>
+  </ul>
+  <div class="nav-right">
+    <a href="cart.html" class="cart-icon">Cart <span class="cart-count" id="nav-count">0</span></a>
+    <a href="store.html" class="nav-cta">Find a store</a>
+  </div>
+</nav>
+
+<div class="cart-page">
+  <div class="cart-header">
+    <p class="cart-tag">Your selection</p>
+    <h1 class="cart-title">Your <em>cart</em></h1>
+  </div>
+  <div class="cart-items" id="cart-items"></div>
+  <div class="cart-summary">
+    <h2 class="summary-title">Order <em>summary</em></h2>
+    <div id="summary-lines"></div>
+    <div class="summary-row total">
+      <span>Total</span>
+      <span id="total">$0.00</span>
+    </div>
+    <p class="summary-note">Taxes calculated at checkout. Available for in-store pickup at our Langford location.</p>
+    <button class="checkout-btn" onclick="checkout()">Proceed to checkout</button>
+    <a href="store.html" class="store-btn">Pick up in store</a>
+    <div class="summary-store">
+      <p>Our store</p>
+      <address>737 Goldstream Ave<br>Langford, BC V9B 2X4<br>Open daily</address>
+    </div>
+  </div>
+</div>
+
+<footer>
+  <div><div class="footer-logo"><img src="assets/logo-light.png" alt="Monster Zero"></div><p class="footer-tagline">Zero sugar. Zero compromise. All beast.</p></div>
+  <div><h4>Products</h4><ul><li><a href="product-peach.html">White Peach Oolong</a></li><li><a href="product-yuzu.html">Yuzu Mint</a></li><li><a href="product-cherry.html">Cherry Blossom</a></li></ul></div>
+  <div><h4>Company</h4><ul><li><a href="index.html#about">Our story</a></li><li><a href="store.html">Our store</a></li><li><a href="#">Careers</a></li></ul></div>
+  <div><h4>Connect</h4><ul><li><a href="#">Instagram</a></li><li><a href="#">TikTok</a></li><li><a href="#">Contact</a></li></ul></div>
+  <div class="footer-bottom"><p class="footer-copy">© 2026 Monster Zero. Not suitable for children, pregnant or breastfeeding women, or individuals sensitive to caffeine.</p></div>
+</footer>
+
+<script>
+function getCart(){try{return JSON.parse(localStorage.getItem('mz-cart'))||[];}catch{return[];}}
+function saveCart(c){localStorage.setItem('mz-cart',JSON.stringify(c));}
+function updateNavCount(){const c=getCart();document.getElementById('nav-count').textContent=c.reduce((a,i)=>a+i.qty,0);}
+function renderCart(){
+  const cart=getCart();
+  const container=document.getElementById('cart-items');
+  const summaryLines=document.getElementById('summary-lines');
+  const totalEl=document.getElementById('total');
+  updateNavCount();
+  if(cart.length===0){
+    container.innerHTML=`<div class="cart-empty"><p>Your cart is empty.</p><a href="index.html#flavours">Browse flavours</a></div>`;
+    summaryLines.innerHTML='';totalEl.textContent='$0.00';return;
+  }
+  let total=0;
+  container.innerHTML=cart.map((item,i)=>{
+    const subtotal=item.price*item.qty;total+=subtotal;
+    return `<div class="cart-item">
+      <div class="cart-item-img"><img src="assets/${item.img}" alt="${item.name}"></div>
+      <div>
+        <div class="cart-item-name">${item.name}</div>
+        <div class="cart-item-price">$${item.price.toFixed(2)} each</div>
+      </div>
+      <div class="cart-item-right">
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${i},-1)">−</button>
+          <span class="qty-val">${item.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${i},1)">+</button>
+        </div>
+        <div class="item-total">$${subtotal.toFixed(2)}</div>
+        <button class="remove-btn" onclick="removeItem(${i})">Remove</button>
+      </div>
+    </div>`;
+  }).join('');
+  const tax=(total*0.05);
+  summaryLines.innerHTML=`
+    <div class="summary-row"><span>Subtotal</span><span>$${total.toFixed(2)}</span></div>
+    <div class="summary-row"><span>GST (5%)</span><span>$${tax.toFixed(2)}</span></div>
+  `;
+  totalEl.textContent=`$${(total+tax).toFixed(2)}`;
+}
+function changeQty(i,d){const cart=getCart();cart[i].qty+=d;if(cart[i].qty<1)cart.splice(i,1);saveCart(cart);renderCart();}
+function removeItem(i){const cart=getCart();cart.splice(i,1);saveCart(cart);renderCart();}
+function checkout(){alert('Checkout coming soon! Visit us in-store at 737 Goldstream Ave, Langford, BC.');}
+renderCart();
+</script>
+</body>
+</html>
